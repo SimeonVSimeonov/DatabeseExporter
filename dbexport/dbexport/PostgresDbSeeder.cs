@@ -5,16 +5,14 @@ namespace dbexport
     public class PostgresDbSeeder: IDbSeeder
 
     {
-        public void Seed(DbProviderFactory providerFactory)
+        public void Seed(DbConnection connection)
         {
-            var connection = providerFactory.CreateConnection();
-           
+
             if (connection == null)
                 return;
             
             using (connection)
             {
-                connection.ConnectionString = Configuration.NpgsqlConnectionString;
                 connection.Open();
 
                 string[] commands =

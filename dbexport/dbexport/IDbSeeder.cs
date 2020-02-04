@@ -4,6 +4,6 @@ namespace dbexport
 {
     public interface IDbSeeder
     {
-        void Seed(DbProviderFactory providerFactory);
+        void Seed(DbConnection connection);
     }
 }

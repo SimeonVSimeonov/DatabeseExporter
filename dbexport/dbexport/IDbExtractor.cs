@@ -4,6 +4,6 @@ namespace dbexport
 {
     public interface IDbExtractor
     {
-        void Extract(DbProviderFactory providerFactory);
+        void Extract(DbConnection connection);
     }
 }

@@ -5,9 +5,8 @@ namespace dbexport
 {
     public class PostgresDbCreator : IDbCreator
     {
-        public void Create(DbProviderFactory providerFactory)
+        public void Create(DbConnection connection)
         {
-            var connection = providerFactory.CreateConnection();
             if (connection == null)
                 return;
 
@@ -24,7 +23,6 @@ namespace dbexport
             
             using (connection)
             {
-                connection.ConnectionString = Configuration.NpgsqlConnectionString;
                 connection.Open();
 
                 foreach (var statement in commands)

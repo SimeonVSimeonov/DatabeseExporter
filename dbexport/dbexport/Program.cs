@@ -13,16 +13,15 @@ namespace dbexport
             
             try
             {
-                postgresDbCreator.Create(NpgsqlFactory.Instance);
-                postgresDbSeeder.Seed(NpgsqlFactory.Instance);
-                postgresDbExtractor.Extract(NpgsqlFactory.Instance);
+                postgresDbCreator.Create(new NpgsqlConnection(Configuration.NpgsqlConnectionString));
+                postgresDbSeeder.Seed(new NpgsqlConnection(Configuration.NpgsqlConnectionString));
+                postgresDbExtractor.Extract(new NpgsqlConnection(Configuration.NpgsqlConnectionString));
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 throw;
             }
-            
         }
     }
 }

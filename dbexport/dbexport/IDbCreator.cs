@@ -4,6 +4,6 @@ namespace dbexport
 {
     public interface IDbCreator
     {
-        void Create(DbProviderFactory providerFactory);
+        void Create(DbConnection connection);
     }
 }
