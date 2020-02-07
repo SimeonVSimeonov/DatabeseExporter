@@ -4,5 +4,7 @@
     <file url="file://$PROJECT_DIR$/dbexport/PostgresDbCreator.cs" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/dbexport/PostgresDbSeeder.cs" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/dbexport/Program.cs" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/dbexport/SQLiteDbCreator.cs" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/dbexport/SQLiteDbSeeder.cs" dialect="GenericSQL" />
   </component>
 </project>
