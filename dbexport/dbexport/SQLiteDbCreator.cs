@@ -6,29 +6,21 @@ namespace dbexport
     {
         public void Create(DbConnection connection)
         {
-            using (connection)
+            if (connection == null)
+                return;
+
+            string[] commands =
             {
-                if (connection == null)
-                    return;
+                "CREATE TABLE IF NOT EXISTS Countries (Id INTEGER PRIMARY KEY AUTOINCREMENT ,Name VARCHAR(50))",
 
-                string[] commands =
-                {
-                    "CREATE TABLE IF NOT EXISTS Countries (Id INTEGER PRIMARY KEY AUTOINCREMENT ,Name VARCHAR(50))",
+                "CREATE TABLE IF NOT EXISTS Towns(Id INTEGER PRIMARY KEY AUTOINCREMENT ,Name VARCHAR(50) ,Country_Id INT )",
 
-                    "CREATE TABLE IF NOT EXISTS Towns(Id INTEGER PRIMARY KEY AUTOINCREMENT ,Name VARCHAR(50) ,Country_Id INT )",
+                "CREATE TABLE IF NOT EXISTS Students(Id INTEGER PRIMARY KEY AUTOINCREMENT ,Name VARCHAR(30) ,Age INT, Town_Id INT )",
+            };
 
-                    "CREATE TABLE IF NOT EXISTS Students(Id INTEGER PRIMARY KEY AUTOINCREMENT ,Name VARCHAR(30) ,Age INT, Town_Id INT )",
-                };
-
-                using (connection)
-                {
-                    connection.Open();
-
-                    foreach (var statement in commands)
-                    {
-                        ExecNonQuery(connection, statement);
-                    }
-                }
+            foreach (var statement in commands)
+            {
+                ExecNonQuery(connection, statement);
             }
         }
 
