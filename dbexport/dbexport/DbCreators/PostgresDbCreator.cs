@@ -1,7 +1,7 @@
 ﻿using System.Data.Common;
-using Npgsql;
+using dbexport.Interfaces;
 
-namespace dbexport
+namespace dbexport.DbCreators
 {
     public class PostgresDbCreator : IDbCreator
     {

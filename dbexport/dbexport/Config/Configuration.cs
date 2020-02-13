@@ -1,4 +1,4 @@
-﻿namespace dbexport
+﻿namespace dbexport.Config
 {
     public static class Configuration
     {

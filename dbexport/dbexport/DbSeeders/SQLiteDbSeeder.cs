@@ -1,6 +1,7 @@
 ﻿using System.Data.Common;
+using dbexport.Interfaces;
 
-namespace dbexport
+namespace dbexport.DbSeeders
 {
     public class SQLiteDbSeeder : IDbSeeder
 

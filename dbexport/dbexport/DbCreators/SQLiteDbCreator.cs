@@ -1,6 +1,7 @@
 ﻿using System.Data.Common;
+using dbexport.Interfaces;
 
-namespace dbexport
+namespace dbexport.DbCreators
 {
     public class SQLiteDbCreator : IDbCreator
     {

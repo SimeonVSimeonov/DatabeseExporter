@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using dbexport.Interfaces;
+using Npgsql;
 
-namespace dbexport
+namespace dbexport.DbExtractors
 {
-    public class SQLiteDbExtractor : IDbExtractor
+    public class PostgresDbExtractor : IDbExtractor
     {
         public string[] GetTables(DbConnection connection)
         {
@@ -16,8 +18,9 @@ namespace dbexport
             tableNames = new string[dataTable.Rows.Count];
             foreach (DataRow dataRow in dataTable.Rows)
             {
+                string schemaName = (string) dataRow[1];
                 string tableName = (string) dataRow[2];
-                tableNames[idx] = tableName;
+                tableNames[idx] = schemaName + "." + tableName;
                 idx++;
             }
 
@@ -30,12 +33,16 @@ namespace dbexport
 
             using (DbCommand command = connection.CreateCommand())
             {
-                command.CommandText = $"PRAGMA table_info ('{tableName}')";
+                command.CommandText =
+                    @"SELECT column_name FROM information_schema.columns WHERE table_name = :tableName";
+                NpgsqlParameter parameter = new NpgsqlParameter("tableName", DbType.String);
+                parameter.Value = tableName;
+                command.Parameters.Add(parameter);
                 using (DbDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        columns.Add(reader.GetString(1));
+                        columns.Add(reader.GetString(0));
                     }
                 }
             }

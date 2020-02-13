@@ -1,6 +1,6 @@
 ﻿using System.Data.Common;
 
-namespace dbexport
+namespace dbexport.Interfaces
 {
     public interface IDbExtractor
     {
