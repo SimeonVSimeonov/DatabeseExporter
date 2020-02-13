@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using Npgsql;
@@ -16,8 +17,9 @@ namespace dbexport
             tableNames = new string[dataTable.Rows.Count];
             foreach (DataRow dataRow in dataTable.Rows)
             {
+                string schemaName = (string) dataRow[1];
                 string tableName = (string) dataRow[2];
-                tableNames[idx] = tableName;
+                tableNames[idx] = schemaName + "." + tableName;
                 idx++;
             }
 
@@ -49,7 +51,13 @@ namespace dbexport
 
         public DbDataReader ReadData(DbConnection connection, string tableName, string[] columns)
         {
-            throw new System.NotImplementedException();
+            DbDataReader reader = null;
+            DbCommand command = null;
+
+            command = connection.CreateCommand();
+            command.CommandText = $"SELECT {String.Join(", ", columns)} FROM {tableName}";
+            reader = command.ExecuteReader();
+            return reader;
         }
     }
 }

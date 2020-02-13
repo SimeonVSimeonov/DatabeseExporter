@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Data.SQLite; //Not Microsoft.Data.Sqlite; new SqliteConnection();
 using System.Linq;
 using Npgsql;
@@ -15,29 +18,45 @@ namespace dbexport
             SQLiteDbCreator sqLiteDbCreator = new SQLiteDbCreator();
             SQLiteDbSeeder sqLiteDbSeeder = new SQLiteDbSeeder();
 
-            DbExtractor dbExtractor = new DbExtractor();
+            PostgresDbExtractor postgresDbExtractor = new PostgresDbExtractor();
+            SQLiteDbExtractor sqLiteDbExtractor = new SQLiteDbExtractor();
+
+            Dictionary<string, string[]> tableData = new Dictionary<string, string[]>();
+
             try
             {
-                //TODO: pass data from GetTables method to GetColumns
-                var pgsqlCol = dbExtractor.GetColumns("university.students",
-                    new NpgsqlConnection(Configuration.NpgsqlConnectionString));
-                Console.WriteLine(string.Join(", ", pgsqlCol));
-   
-                var sqliteCol = dbExtractor.GetColumns("Students",
-                    new SQLiteConnection(Configuration.SQLiteConnectionString));
-                Console.WriteLine(string.Join(", ", sqliteCol));
+                using (DbConnection connection = new SQLiteConnection(Configuration.SQLiteConnectionString))
+                {
+                    connection.Open();
 
-                var pgsql = dbExtractor.GetTables(new NpgsqlConnection(Configuration.NpgsqlConnectionString));
-                Console.WriteLine(string.Join(", ", pgsql));
+                    //sqLiteDbCreator.Create(connection);
+                    //sqLiteDbSeeder.Seed(connection);
+
+                    var sqliteTables = sqLiteDbExtractor.GetTables(connection);
+                    foreach (var sqliteTable in sqliteTables)
+                    {
+                        var columns = sqLiteDbExtractor.GetColumns(connection, sqliteTable);
+                        using var data = sqLiteDbExtractor.ReadData(connection, sqliteTable, columns);
+                        tableData.Add(sqliteTable, columns);
+                    }
+                }
                 
-                var sqlite = dbExtractor.GetTables(new SQLiteConnection(Configuration.SQLiteConnectionString));
-                Console.WriteLine(string.Join(", ", sqlite));
+                using (DbConnection connection = new NpgsqlConnection(Configuration.NpgsqlConnectionString))
+                {
+                    connection.Open();
 
-                // postgresDbCreator.Create(new NpgsqlConnection(Configuration.NpgsqlConnectionString));
-                // postgresDbSeeder.Seed(new NpgsqlConnection(Configuration.NpgsqlConnectionString));
+                    //postgresDbCreator.Create(connection);
+                    //postgresDbSeeder.Seed(connection);
 
-                // sqLiteDbCreator.Create(new SQLiteConnection(Configuration.SQLiteConnectionString));
-                // sqLiteDbSeeder.Seed(new SQLiteConnection(Configuration.SQLiteConnectionString));    
+                    var pgsqlTables = postgresDbExtractor.GetTables(connection);
+                    foreach (var pgsqlTable in pgsqlTables)
+                    {
+                        var columns = postgresDbExtractor.GetColumns(connection, pgsqlTable);
+                        using var data = postgresDbExtractor.ReadData(connection, pgsqlTable, columns);
+                        tableData.Add(pgsqlTable, columns);
+                    }
+                }
+                
             }
             catch (Exception e)
             {

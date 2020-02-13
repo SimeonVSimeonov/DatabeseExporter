@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
@@ -26,7 +27,7 @@ namespace dbexport
         public string[] GetColumns(DbConnection connection, string tableName)
         {
             List<string> columns = new List<string>();
-            
+
             using (DbCommand command = connection.CreateCommand())
             {
                 command.CommandText = $"PRAGMA table_info ('{tableName}')";
@@ -34,7 +35,7 @@ namespace dbexport
                 {
                     while (reader.Read())
                     {
-                       columns.Add(reader.GetString(1));
+                        columns.Add(reader.GetString(1));
                     }
                 }
             }
@@ -44,7 +45,13 @@ namespace dbexport
 
         public DbDataReader ReadData(DbConnection connection, string tableName, string[] columns)
         {
-            throw new System.NotImplementedException();
+            DbDataReader reader = null;
+            DbCommand command = null;
+
+            command = connection.CreateCommand();
+            command.CommandText = $"SELECT {String.Join(", ", columns)} FROM {tableName}";
+            reader = command.ExecuteReader();
+            return reader;
         }
     }
 }
