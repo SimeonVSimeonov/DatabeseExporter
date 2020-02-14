@@ -18,9 +18,9 @@ namespace dbexport.DbExtractors
             tableNames = new string[dataTable.Rows.Count];
             foreach (DataRow dataRow in dataTable.Rows)
             {
-                string schemaName = (string) dataRow[1];
+                //string schemaName = (string) dataRow[1];
                 string tableName = (string) dataRow[2];
-                tableNames[idx] = schemaName + "." + tableName;
+                tableNames[idx] = tableName;
                 idx++;
             }
 
@@ -31,14 +31,14 @@ namespace dbexport.DbExtractors
         {
             List<string> columns = new List<string>();
 
-            using (DbCommand command = connection.CreateCommand())
+            using (NpgsqlCommand command = (NpgsqlCommand)connection.CreateCommand())
             {
                 command.CommandText =
-                    @"SELECT column_name FROM information_schema.columns WHERE table_name = :tableName";
-                NpgsqlParameter parameter = new NpgsqlParameter("tableName", DbType.String);
-                parameter.Value = tableName;
-                command.Parameters.Add(parameter);
-                using (DbDataReader reader = command.ExecuteReader())
+                    $"SELECT column_name FROM information_schema.columns WHERE table_name = '{tableName}'";
+                // NpgsqlParameter parameter = new NpgsqlParameter("tableName", DbType.String);
+                // parameter.Value = tableName;
+                // command.Parameters.Add(parameter);
+                using (NpgsqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {

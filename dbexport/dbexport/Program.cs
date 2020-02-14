@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SQLite;
+using System.IO;
+using System.Linq;
+using System.Text;
 using dbexport.Config;
 using dbexport.DbCreators;
 using dbexport.DbExtractors;
@@ -22,43 +26,42 @@ namespace dbexport
 
             PostgresDbExtractor postgresDbExtractor = new PostgresDbExtractor();
             SQLiteDbExtractor sqLiteDbExtractor = new SQLiteDbExtractor();
-
-            Dictionary<string, string[]> tableData = new Dictionary<string, string[]>();
+            CsvGenerator csvGenerator = new CsvGenerator();
 
             try
             {
                 using (DbConnection connection = new SQLiteConnection(Configuration.SQLiteConnectionString))
                 {
                     connection.Open();
-
-                    //sqLiteDbCreator.Create(connection);
-                    //sqLiteDbSeeder.Seed(connection);
-
-                    var sqliteTables = sqLiteDbExtractor.GetTables(connection);
-                    foreach (var sqliteTable in sqliteTables)
+                    
+                    var path = "D:\\output";
+                    if (Directory.Exists(path))
+                        Directory.Delete(path, true);
+                    Directory.CreateDirectory(path);
+                    
+                    var tables = sqLiteDbExtractor.GetTables(connection);
+                    foreach (var table in tables.Where(x => x != "sqlite_sequence"))
                     {
-                        var columns = sqLiteDbExtractor.GetColumns(connection, sqliteTable);
-                        using var data = sqLiteDbExtractor.ReadData(connection, sqliteTable, columns);
-                        tableData.Add(sqliteTable, columns);
+                        csvGenerator.Generate(sqLiteDbExtractor, connection, table, path);
                     }
+                
                 }
                 
                 using (DbConnection connection = new NpgsqlConnection(Configuration.NpgsqlConnectionString))
                 {
                     connection.Open();
 
-                    //postgresDbCreator.Create(connection);
-                    //postgresDbSeeder.Seed(connection);
+                    var path = "D:\\output";
+                    if (Directory.Exists(path))
+                        Directory.Delete(path, true);
+                    Directory.CreateDirectory(path);
 
                     var pgsqlTables = postgresDbExtractor.GetTables(connection);
                     foreach (var pgsqlTable in pgsqlTables)
                     {
-                        var columns = postgresDbExtractor.GetColumns(connection, pgsqlTable);
-                        using var data = postgresDbExtractor.ReadData(connection, pgsqlTable, columns);
-                        tableData.Add(pgsqlTable, columns);
+                        csvGenerator.Generate(postgresDbExtractor, connection, pgsqlTable, path);
                     }
                 }
-                
             }
             catch (Exception e)
             {

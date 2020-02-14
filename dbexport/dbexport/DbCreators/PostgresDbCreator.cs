@@ -12,13 +12,11 @@ namespace dbexport.DbCreators
 
             string[] commands =
             {
-                "CREATE SCHEMA IF NOT EXISTS university",
+                "CREATE TABLE IF NOT EXISTS Countries (Id SERIAL PRIMARY KEY ,Name VARCHAR(50))",
 
-                "CREATE TABLE IF NOT EXISTS university.Countries (Id SERIAL PRIMARY KEY ,Name VARCHAR(50))",
+                "CREATE TABLE IF NOT EXISTS Towns(Id SERIAL PRIMARY KEY ,Name VARCHAR(50) ,Country_Id INT )",
 
-                "CREATE TABLE IF NOT EXISTS university.Towns(Id SERIAL PRIMARY KEY ,Name VARCHAR(50) ,Country_Id INT )",
-
-                "CREATE TABLE IF NOT EXISTS university.Students(Id SERIAL PRIMARY KEY ,Name VARCHAR(30) ,Age INT, Town_Id INT )",
+                "CREATE TABLE IF NOT EXISTS Students(Id SERIAL PRIMARY KEY ,Name VARCHAR(30) ,Age INT, Town_Id INT )",
             };
             
             foreach (var statement in commands)
