@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.IO;
 using dbexport.Interfaces;
 
-namespace dbexport
+namespace dbexport.FileGenerators
 {
     public class CsvGenerator : IGenerator
     {

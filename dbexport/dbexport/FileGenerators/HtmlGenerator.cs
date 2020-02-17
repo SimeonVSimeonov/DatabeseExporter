@@ -6,7 +6,7 @@ using System.Net;
 using dbexport.Interfaces;
 using Microsoft.VisualBasic;
 
-namespace dbexport
+namespace dbexport.FileGenerators
 {
     public class HtmlGenerator : IGenerator
     {
