@@ -27,31 +27,32 @@ namespace dbexport
             PostgresDbExtractor postgresDbExtractor = new PostgresDbExtractor();
             SQLiteDbExtractor sqLiteDbExtractor = new SQLiteDbExtractor();
             CsvGenerator csvGenerator = new CsvGenerator();
+            HtmlGenerator htmlGenerator = new HtmlGenerator();
 
             try
             {
                 using (DbConnection connection = new SQLiteConnection(Configuration.SQLiteConnectionString))
                 {
                     connection.Open();
-                    
-                    var path = "D:\\output";
+
+                    var path = "D:\\sqLite_output";
                     if (Directory.Exists(path))
                         Directory.Delete(path, true);
                     Directory.CreateDirectory(path);
-                    
-                    var tables = sqLiteDbExtractor.GetTables(connection);
-                    foreach (var table in tables.Where(x => x != "sqlite_sequence"))
+
+                    var sqLiteTables = sqLiteDbExtractor.GetTables(connection);
+                    foreach (var sqLiteTable in sqLiteTables.Where(x => x != "sqlite_sequence"))
                     {
-                        csvGenerator.Generate(sqLiteDbExtractor, connection, table, path);
+                        csvGenerator.Generate(sqLiteDbExtractor, connection, sqLiteTable, path);
+                        htmlGenerator.Generate(sqLiteDbExtractor, connection, sqLiteTable, path);
                     }
-                
                 }
-                
+
                 using (DbConnection connection = new NpgsqlConnection(Configuration.NpgsqlConnectionString))
                 {
                     connection.Open();
 
-                    var path = "D:\\output";
+                    var path = "D:\\pgsql_output";
                     if (Directory.Exists(path))
                         Directory.Delete(path, true);
                     Directory.CreateDirectory(path);
@@ -60,6 +61,7 @@ namespace dbexport
                     foreach (var pgsqlTable in pgsqlTables)
                     {
                         csvGenerator.Generate(postgresDbExtractor, connection, pgsqlTable, path);
+                        htmlGenerator.Generate(postgresDbExtractor, connection, pgsqlTable, path);
                     }
                 }
             }
