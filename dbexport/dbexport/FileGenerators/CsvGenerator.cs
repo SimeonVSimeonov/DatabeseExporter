@@ -27,7 +27,7 @@ namespace dbexport.FileGenerators
                         fileWriter.Write(",");
                     }
                 }
-
+    
                 fileWriter.WriteLine();
             }
         }

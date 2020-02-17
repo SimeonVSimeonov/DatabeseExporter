@@ -2,9 +2,7 @@
 using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Net;
 using dbexport.Interfaces;
-using Microsoft.VisualBasic;
 
 namespace dbexport.FileGenerators
 {
