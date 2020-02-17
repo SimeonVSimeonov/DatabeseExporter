@@ -2,7 +2,7 @@
 
 namespace dbexport.Interfaces
 {
-    public interface ICsvGenerator
+    public interface IGenerator
     {
         void Generate(IDbExtractor reader, DbConnection connection, string tableName, string path);
     }

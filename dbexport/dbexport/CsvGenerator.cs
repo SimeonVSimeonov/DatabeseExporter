@@ -5,18 +5,18 @@ using dbexport.Interfaces;
 
 namespace dbexport
 {
-    public class CsvGenerator : ICsvGenerator
+    public class CsvGenerator : IGenerator
     {
-        public void Generate(IDbExtractor reader, DbConnection connection, string pgsqlTable, string path)
+        public void Generate(IDbExtractor reader, DbConnection connection, string tableName, string path)
         {
-            string filePath = Path.Combine(path, $"{pgsqlTable}.csv");
+            string filePath = Path.Combine(path, $"{tableName}.csv");
             using var fileStream = File.Create(filePath);
             using var fileWriter = new StreamWriter(fileStream);
-            var columns = reader.GetColumns(connection, pgsqlTable);
+            var columns = reader.GetColumns(connection, tableName);
 
             fileWriter.WriteLine(String.Join(",", columns));
 
-            using var dataReader = reader.ReadData(connection, pgsqlTable, columns);
+            using var dataReader = reader.ReadData(connection, tableName, columns);
             while (dataReader.Read())
             {
                 for (int i = 0; i < dataReader.FieldCount; i++)
