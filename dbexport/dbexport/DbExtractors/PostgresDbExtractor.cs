@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using dbexport.Common;
 using dbexport.Interfaces;
 using Npgsql;
 
@@ -18,7 +19,6 @@ namespace dbexport.DbExtractors
             tableNames = new string[dataTable.Rows.Count];
             foreach (DataRow dataRow in dataTable.Rows)
             {
-                //string schemaName = (string) dataRow[1];
                 string tableName = (string) dataRow[2];
                 tableNames[idx] = tableName;
                 idx++;
@@ -27,22 +27,23 @@ namespace dbexport.DbExtractors
             return tableNames;
         }
 
-        public string[] GetColumns(DbConnection connection, string tableName)
+        public DbColumnInfo[] GetColumns(DbConnection connection, string tableName)
         {
-            List<string> columns = new List<string>();
+            List<DbColumnInfo> columns = new List<DbColumnInfo>();
 
             using (NpgsqlCommand command = (NpgsqlCommand)connection.CreateCommand())
             {
                 command.CommandText =
                     $"SELECT column_name FROM information_schema.columns WHERE table_name = '{tableName}'";
-                // NpgsqlParameter parameter = new NpgsqlParameter("tableName", DbType.String);
-                // parameter.Value = tableName;
-                // command.Parameters.Add(parameter);
+
                 using (NpgsqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        columns.Add(reader.GetString(0));
+                        columns.Add(new DbColumnInfo()
+                        {
+                            ColumnName = reader.GetString(0),
+                        });
                     }
                 }
             }

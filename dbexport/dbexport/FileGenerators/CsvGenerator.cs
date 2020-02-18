@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using dbexport.Interfaces;
 
 namespace dbexport.FileGenerators
@@ -13,10 +14,11 @@ namespace dbexport.FileGenerators
             using var fileStream = File.Create(filePath);
             using var fileWriter = new StreamWriter(fileStream);
             var columns = reader.GetColumns(connection, tableName);
+            var columnNames = columns.Select(x => x.ColumnName).ToArray();
+            
+            fileWriter.WriteLine(String.Join(",", columnNames));
 
-            fileWriter.WriteLine(String.Join(",", columns));
-
-            using var dataReader = reader.ReadData(connection, tableName, columns);
+            using var dataReader = reader.ReadData(connection, tableName, columnNames);
             while (dataReader.Read())
             {
                 for (int i = 0; i < dataReader.FieldCount; i++)

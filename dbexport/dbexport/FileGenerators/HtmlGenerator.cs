@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using dbexport.Interfaces;
 
 namespace dbexport.FileGenerators
@@ -17,6 +18,7 @@ namespace dbexport.FileGenerators
             using var fileWriter = new StreamWriter(fileStream);
 
             var columns = reader.GetColumns(connection, tableName);
+            var columnNames = columns.Select(x => x.ColumnName).ToArray();
 
             fileWriter.WriteLine("<!DOCTYPE html>");
             fileWriter.WriteLine("<html>");
@@ -32,17 +34,17 @@ namespace dbexport.FileGenerators
             fileWriter.WriteLine("</head>");
             fileWriter.WriteLine("<body>");
             Write(fileWriter,1, "<table style='width:100%'>");
-            Write(fileWriter, 1, "<h2>Table", tableName, "</h2>");
+            Write(fileWriter, 1, "<h2>Table ", tableName, "</h2>");
 
             Write(fileWriter, 2, "<tr>");
             foreach (var column in columns)
             {
-                Write(fileWriter, 3, "<th>", column, "</th>");
+                Write(fileWriter, 3, "<th>", column.ColumnName, "</th>");
             }
 
             Write(fileWriter, 2, "</tr>");
 
-            using var readData = reader.ReadData(connection, tableName, columns);
+            using var readData = reader.ReadData(connection, tableName, columnNames);
             while (readData.Read())
             {
                 Write(fileWriter, 2, "<tr>");

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using dbexport.Common;
 using dbexport.Interfaces;
 
 namespace dbexport.DbExtractors
@@ -25,9 +26,9 @@ namespace dbexport.DbExtractors
             return tableNames;
         }
 
-        public string[] GetColumns(DbConnection connection, string tableName)
+        public DbColumnInfo[] GetColumns(DbConnection connection, string tableName)
         {
-            List<string> columns = new List<string>();
+            List<DbColumnInfo> columns = new List<DbColumnInfo>();
 
             using (DbCommand command = connection.CreateCommand())
             {
@@ -36,7 +37,10 @@ namespace dbexport.DbExtractors
                 {
                     while (reader.Read())
                     {
-                        columns.Add(reader.GetString(1));
+                        columns.Add(new DbColumnInfo()
+                        {
+                            ColumnName = reader.GetString(1),
+                        });
                     }
                 }
             }
