@@ -33,12 +33,12 @@ namespace dbexport
                 using (DbConnection connection = new SQLiteConnection(Configuration.SQLiteConnectionString))
                 {
                     connection.Open();
-                
+
                     var path = "D:\\sqLite_output";
                     if (Directory.Exists(path))
                         Directory.Delete(path, true);
                     Directory.CreateDirectory(path);
-                
+
                     var sqLiteTables = sqLiteDbExtractor.GetTables(connection);
                     foreach (var sqLiteTable in sqLiteTables.Where(x => x != "sqlite_sequence"))
                     {
@@ -51,12 +51,12 @@ namespace dbexport
                 using (DbConnection connection = new NpgsqlConnection(Configuration.NpgsqlConnectionString))
                 {
                     connection.Open();
-                
+
                     var path = "D:\\pgsql_output";
                     if (Directory.Exists(path))
                         Directory.Delete(path, true);
                     Directory.CreateDirectory(path);
-                
+
                     var pgsqlTables = postgresDbExtractor.GetTables(connection);
                     foreach (var pgsqlTable in pgsqlTables)
                     {

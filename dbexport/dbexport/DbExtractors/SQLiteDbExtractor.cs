@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using dbexport.Common;
 using dbexport.Interfaces;
 
@@ -28,21 +29,19 @@ namespace dbexport.DbExtractors
 
         public DbColumnInfo[] GetColumns(DbConnection connection, string tableName)
         {
-            List<DbColumnInfo> columns = new List<DbColumnInfo>();
+            List<DbColumnInfo> columns;
 
             using (DbCommand command = connection.CreateCommand())
             {
-                command.CommandText = $"PRAGMA table_info ('{tableName}')";
-                using (DbDataReader reader = command.ExecuteReader())
+                command.CommandText = $"SELECT * FROM \"{tableName}\" LIMIT 0";
+                using DbDataReader reader = command.ExecuteReader();
+                columns = reader.GetColumnSchema().Select(column => new DbColumnInfo()
                 {
-                    while (reader.Read())
-                    {
-                        columns.Add(new DbColumnInfo()
-                        {
-                            ColumnName = reader.GetString(1),
-                        });
-                    }
-                }
+                    ColumnName = column.ColumnName,
+                    ColumnType = column.DataType,
+                    IsNullable = column.AllowDBNull.GetValueOrDefault(),
+                    IsPrimaryKey = column.IsKey.GetValueOrDefault()
+                }).ToList();
             }
 
             return columns.ToArray();

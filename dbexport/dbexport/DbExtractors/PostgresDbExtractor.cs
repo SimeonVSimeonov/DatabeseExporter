@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using dbexport.Common;
 using dbexport.Interfaces;
 using Npgsql;
@@ -29,23 +30,19 @@ namespace dbexport.DbExtractors
 
         public DbColumnInfo[] GetColumns(DbConnection connection, string tableName)
         {
-            List<DbColumnInfo> columns = new List<DbColumnInfo>();
+            List<DbColumnInfo> columns;
 
-            using (NpgsqlCommand command = (NpgsqlCommand)connection.CreateCommand())
+            using (NpgsqlCommand command = (NpgsqlCommand) connection.CreateCommand())
             {
-                command.CommandText =
-                    $"SELECT column_name FROM information_schema.columns WHERE table_name = '{tableName}'";
-
-                using (NpgsqlDataReader reader = command.ExecuteReader())
+                command.CommandText = $"SELECT * FROM \"{tableName}\" LIMIT 0";
+                using NpgsqlDataReader reader = command.ExecuteReader(CommandBehavior.KeyInfo);
+                columns = reader.GetColumnSchema().Select(column => new DbColumnInfo()
                 {
-                    while (reader.Read())
-                    {
-                        columns.Add(new DbColumnInfo()
-                        {
-                            ColumnName = reader.GetString(0),
-                        });
-                    }
-                }
+                    ColumnName = column.ColumnName,
+                    ColumnType = column.DataType,
+                    IsNullable = column.AllowDBNull.GetValueOrDefault(),
+                    IsPrimaryKey = column.IsKey.GetValueOrDefault()
+                }).ToList();
             }
 
             return columns.ToArray();
