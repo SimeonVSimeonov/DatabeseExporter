@@ -27,6 +27,7 @@ namespace dbexport
             CsvGenerator csvGenerator = new CsvGenerator();
             HtmlGenerator htmlGenerator = new HtmlGenerator();
             XmlGenerator xmlGenerator = new XmlGenerator();
+            CsGenerator csGenerator = new CsGenerator();
 
             try
             {
@@ -45,6 +46,7 @@ namespace dbexport
                         csvGenerator.Generate(sqLiteDbExtractor, connection, sqLiteTable, path);
                         htmlGenerator.Generate(sqLiteDbExtractor, connection, sqLiteTable, path);
                         xmlGenerator.Generate(sqLiteDbExtractor, connection, sqLiteTable, path);
+                        csGenerator.Generate(sqLiteDbExtractor, connection, sqLiteTable, path);
                     }
                 }
 
@@ -63,6 +65,7 @@ namespace dbexport
                         csvGenerator.Generate(postgresDbExtractor, connection, pgsqlTable, path);
                         htmlGenerator.Generate(postgresDbExtractor, connection, pgsqlTable, path);
                         xmlGenerator.Generate(postgresDbExtractor, connection, pgsqlTable, path);
+                        csGenerator.Generate(postgresDbExtractor, connection, pgsqlTable, path);
                     }
                 }
             }
